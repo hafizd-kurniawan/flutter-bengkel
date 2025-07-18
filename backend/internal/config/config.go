@@ -21,6 +21,7 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	Name     string
+	SSLMode  string
 }
 
 type JWTConfig struct {
@@ -47,10 +48,11 @@ func LoadConfig() *Config {
 	return &Config{
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnv("DB_PORT", "3306"),
-			User:     getEnv("DB_USER", "root"),
+			Port:     getEnv("DB_PORT", "5432"),
+			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", ""),
 			Name:     getEnv("DB_NAME", "bengkel_db"),
+			SSLMode:  getEnv("DB_SSLMODE", "disable"),
 		},
 		JWT: JWTConfig{
 			Secret:            getEnv("JWT_SECRET", "your-super-secret-jwt-key"),

@@ -6,16 +6,19 @@ import (
 	"flutter-bengkel/internal/models"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/google/uuid"
 )
 
 // Service Repository
 type ServiceRepository interface {
 	Create(service *models.Service) error
-	GetByID(id int64) (*models.Service, error)
+	GetByID(id uuid.UUID) (*models.Service, error)
 	GetByServiceCode(code string) (*models.Service, error)
-	Update(id int64, service *models.Service) error
-	Delete(id int64) error
-	List(offset, limit int, categoryID *int64, search string) ([]models.Service, int64, error)
+	Update(id uuid.UUID, service *models.Service) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, categoryID *uuid.UUID, search string, includeDeleted bool) ([]models.Service, int64, error)
 	ListCategories() ([]models.ServiceCategory, error)
 	GenerateServiceCode() (string, error)
 }
@@ -204,13 +207,15 @@ func (r *serviceRepository) GenerateServiceCode() (string, error) {
 // Product Repository
 type ProductRepository interface {
 	Create(product *models.Product) error
-	GetByID(id int64) (*models.Product, error)
+	GetByID(id uuid.UUID) (*models.Product, error)
 	GetByProductCode(code string) (*models.Product, error)
-	Update(id int64, product *models.Product) error
-	Delete(id int64) error
-	List(offset, limit int, categoryID *int64, supplierID *int64, search string) ([]models.Product, int64, error)
-	UpdateStock(id int64, quantity int, operation string) error // operation: "add" or "subtract"
-	GetLowStockProducts(outletID *int64) ([]models.Product, error)
+	Update(id uuid.UUID, product *models.Product) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, categoryID *uuid.UUID, supplierID *uuid.UUID, search string, includeDeleted bool) ([]models.Product, int64, error)
+	UpdateStock(id uuid.UUID, quantity int, operation string) error // operation: "add" or "subtract"
+	GetLowStockProducts(outletID *uuid.UUID) ([]models.Product, error)
 	ListCategories() ([]models.Category, error)
 	ListSuppliers() ([]models.Supplier, error)
 	ListUnitTypes() ([]models.UnitType, error)

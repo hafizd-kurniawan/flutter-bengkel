@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+	"github.com/google/uuid"
 )
 
 // Common response structure
@@ -27,11 +28,13 @@ type PaginatedResponse struct {
 	Meta    PaginationMeta `json:"meta"`
 }
 
-// Base model with common fields
+// Base model with common fields including soft delete
 type BaseModel struct {
-	ID        int64     `json:"id" db:"id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID        uuid.UUID  `json:"id" db:"id"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
+	DeletedBy *uuid.UUID `json:"deleted_by,omitempty" db:"deleted_by"`
 }
 
 // User model
@@ -42,8 +45,8 @@ type User struct {
 	PasswordHash string     `json:"-" db:"password_hash"`
 	FullName     string     `json:"full_name" db:"full_name" validate:"required"`
 	Phone        string     `json:"phone" db:"phone"`
-	RoleID       int64      `json:"role_id" db:"role_id" validate:"required"`
-	OutletID     *int64     `json:"outlet_id" db:"outlet_id"`
+	RoleID       uuid.UUID  `json:"role_id" db:"role_id" validate:"required"`
+	OutletID     *uuid.UUID `json:"outlet_id" db:"outlet_id"`
 	IsActive     bool       `json:"is_active" db:"is_active"`
 	LastLoginAt  *time.Time `json:"last_login_at" db:"last_login_at"`
 	
@@ -54,24 +57,24 @@ type User struct {
 
 // CreateUserRequest for user creation
 type CreateUserRequest struct {
-	Username string `json:"username" validate:"required,min=3,max=100"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6"`
-	FullName string `json:"full_name" validate:"required"`
-	Phone    string `json:"phone"`
-	RoleID   int64  `json:"role_id" validate:"required"`
-	OutletID *int64 `json:"outlet_id"`
+	Username string     `json:"username" validate:"required,min=3,max=100"`
+	Email    string     `json:"email" validate:"required,email"`
+	Password string     `json:"password" validate:"required,min=6"`
+	FullName string     `json:"full_name" validate:"required"`
+	Phone    string     `json:"phone"`
+	RoleID   uuid.UUID  `json:"role_id" validate:"required"`
+	OutletID *uuid.UUID `json:"outlet_id"`
 }
 
 // UpdateUserRequest for user updates
 type UpdateUserRequest struct {
-	Username string `json:"username" validate:"required,min=3,max=100"`
-	Email    string `json:"email" validate:"required,email"`
-	FullName string `json:"full_name" validate:"required"`
-	Phone    string `json:"phone"`
-	RoleID   int64  `json:"role_id" validate:"required"`
-	OutletID *int64 `json:"outlet_id"`
-	IsActive bool   `json:"is_active"`
+	Username string     `json:"username" validate:"required,min=3,max=100"`
+	Email    string     `json:"email" validate:"required,email"`
+	FullName string     `json:"full_name" validate:"required"`
+	Phone    string     `json:"phone"`
+	RoleID   uuid.UUID  `json:"role_id" validate:"required"`
+	OutletID *uuid.UUID `json:"outlet_id"`
+	IsActive bool       `json:"is_active"`
 }
 
 // ChangePasswordRequest for password changes
@@ -134,7 +137,7 @@ type Customer struct {
 // CustomerVehicle model
 type CustomerVehicle struct {
 	BaseModel
-	CustomerID           int64   `json:"customer_id" db:"customer_id" validate:"required"`
+	CustomerID           uuid.UUID `json:"customer_id" db:"customer_id" validate:"required"`
 	VehicleNumber        string  `json:"vehicle_number" db:"vehicle_number" validate:"required"`
 	Brand                string  `json:"brand" db:"brand" validate:"required"`
 	Model                string  `json:"model" db:"model" validate:"required"`
@@ -175,9 +178,9 @@ type RefreshTokenRequest struct {
 
 // JWT Claims
 type Claims struct {
-	UserID   int64    `json:"user_id"`
-	Username string   `json:"username"`
-	RoleID   int64    `json:"role_id"`
-	OutletID *int64   `json:"outlet_id"`
+	UserID   uuid.UUID   `json:"user_id"`
+	Username string      `json:"username"`
+	RoleID   uuid.UUID   `json:"role_id"`
+	OutletID *uuid.UUID  `json:"outlet_id"`
 	Permissions []string `json:"permissions"`
 }
