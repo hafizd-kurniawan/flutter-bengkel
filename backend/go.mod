@@ -3,12 +3,13 @@ module flutter-bengkel
 go 1.21
 
 require (
-	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/gofiber/swagger v0.1.14
 	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/google/uuid v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.17.0
 )
 
@@ -21,7 +22,6 @@ require (
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
-	github.com/google/uuid v1.5.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect

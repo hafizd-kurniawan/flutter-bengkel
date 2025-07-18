@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 // ErrorHandler handles all errors in the application
@@ -103,12 +104,33 @@ func JWTMiddleware(secret string) fiber.Handler {
 		}
 
 		// Store claims in context
-		c.Locals("user_id", int64((*claims)["user_id"].(float64)))
+		userIDStr := (*claims)["user_id"].(string)
+		userID, err := uuid.Parse(userIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
+				Success: false,
+				Message: "Invalid user ID format",
+			})
+		}
+		c.Locals("user_id", userID)
 		c.Locals("username", (*claims)["username"].(string))
-		c.Locals("role_id", int64((*claims)["role_id"].(float64)))
 		
-		if outletID, exists := (*claims)["outlet_id"]; exists && outletID != nil {
-			c.Locals("outlet_id", int64(outletID.(float64)))
+		roleIDStr := (*claims)["role_id"].(string)
+		roleID, err := uuid.Parse(roleIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
+				Success: false,
+				Message: "Invalid role ID format",
+			})
+		}
+		c.Locals("role_id", roleID)
+		
+		if outletIDRaw, exists := (*claims)["outlet_id"]; exists && outletIDRaw != nil {
+			outletIDStr := outletIDRaw.(string)
+			outletID, err := uuid.Parse(outletIDStr)
+			if err == nil {
+				c.Locals("outlet_id", outletID)
+			}
 		}
 
 		if permissions, exists := (*claims)["permissions"]; exists {
@@ -174,7 +196,7 @@ func RequireRole(roleID int64) fiber.Handler {
 
 // GetUserFromContext extracts user information from context
 func GetUserFromContext(c *fiber.Ctx) (*models.Claims, error) {
-	userID, ok := c.Locals("user_id").(int64)
+	userID, ok := c.Locals("user_id").(uuid.UUID)
 	if !ok {
 		return nil, errors.New("user ID not found in context")
 	}
@@ -184,7 +206,7 @@ func GetUserFromContext(c *fiber.Ctx) (*models.Claims, error) {
 		return nil, errors.New("username not found in context")
 	}
 
-	roleID, ok := c.Locals("role_id").(int64)
+	roleID, ok := c.Locals("role_id").(uuid.UUID)
 	if !ok {
 		return nil, errors.New("role ID not found in context")
 	}
@@ -196,7 +218,7 @@ func GetUserFromContext(c *fiber.Ctx) (*models.Claims, error) {
 	}
 
 	// Outlet ID is optional
-	if outletID, ok := c.Locals("outlet_id").(int64); ok {
+	if outletID, ok := c.Locals("outlet_id").(uuid.UUID); ok {
 		claims.OutletID = &outletID
 	}
 
