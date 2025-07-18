@@ -6,23 +6,26 @@ import (
 	"flutter-bengkel/internal/models"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/google/uuid"
 )
 
 // ServiceJob Repository
 type ServiceJobRepository interface {
 	Create(serviceJob *models.ServiceJob) error
-	GetByID(id int64) (*models.ServiceJob, error)
+	GetByID(id uuid.UUID) (*models.ServiceJob, error)
 	GetByJobNumber(jobNumber string) (*models.ServiceJob, error)
-	Update(id int64, serviceJob *models.ServiceJob) error
-	UpdateStatus(id int64, status string, userID int64, notes string) error
-	Delete(id int64) error
-	List(offset, limit int, outletID *int64, status string, search string) ([]models.ServiceJob, int64, error)
-	GetNextQueueNumber(outletID int64) (int, error)
+	Update(id uuid.UUID, serviceJob *models.ServiceJob) error
+	UpdateStatus(id uuid.UUID, status string, userID uuid.UUID, notes string) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, outletID *uuid.UUID, status string, search string, includeDeleted bool) ([]models.ServiceJob, int64, error)
+	GetNextQueueNumber(outletID uuid.UUID) (int, error)
 	GenerateJobNumber() (string, error)
 	AddDetail(detail *models.ServiceDetail) error
-	GetDetails(serviceJobID int64) ([]models.ServiceDetail, error)
-	UpdateDetail(id int64, detail *models.ServiceDetail) error
-	DeleteDetail(id int64) error
+	GetDetails(serviceJobID uuid.UUID) ([]models.ServiceDetail, error)
+	UpdateDetail(id uuid.UUID, detail *models.ServiceDetail) error
+	DeleteDetail(id uuid.UUID) error
 }
 
 type serviceJobRepository struct {
@@ -359,17 +362,19 @@ func (r *serviceJobRepository) DeleteDetail(id int64) error {
 // Transaction Repository
 type TransactionRepository interface {
 	Create(transaction *models.Transaction) error
-	GetByID(id int64) (*models.Transaction, error)
+	GetByID(id uuid.UUID) (*models.Transaction, error)
 	GetByTransactionNumber(transactionNumber string) (*models.Transaction, error)
-	Update(id int64, transaction *models.Transaction) error
-	Delete(id int64) error
-	List(offset, limit int, outletID *int64, transactionType string, search string) ([]models.Transaction, int64, error)
+	Update(id uuid.UUID, transaction *models.Transaction) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, outletID *uuid.UUID, transactionType string, search string, includeDeleted bool) ([]models.Transaction, int64, error)
 	GenerateTransactionNumber(transactionType string) (string, error)
 	AddDetail(detail *models.TransactionDetail) error
-	GetDetails(transactionID int64) ([]models.TransactionDetail, error)
-	UpdateDetail(id int64, detail *models.TransactionDetail) error
-	DeleteDetail(id int64) error
-	UpdatePaymentStatus(id int64, status string) error
+	GetDetails(transactionID uuid.UUID) ([]models.TransactionDetail, error)
+	UpdateDetail(id uuid.UUID, detail *models.TransactionDetail) error
+	DeleteDetail(id uuid.UUID) error
+	UpdatePaymentStatus(id uuid.UUID, status string) error
 }
 
 type transactionRepository struct {
@@ -669,10 +674,12 @@ func (r *transactionRepository) UpdatePaymentStatus(id int64, status string) err
 // Payment Repository
 type PaymentRepository interface {
 	Create(payment *models.Payment) error
-	GetByID(id int64) (*models.Payment, error)
-	GetByTransactionID(transactionID int64) ([]models.Payment, error)
-	Delete(id int64) error
-	List(offset, limit int, transactionID *int64) ([]models.Payment, int64, error)
+	GetByID(id uuid.UUID) (*models.Payment, error)
+	GetByTransactionID(transactionID uuid.UUID) ([]models.Payment, error)
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, transactionID *uuid.UUID, includeDeleted bool) ([]models.Payment, int64, error)
 	ListPaymentMethods() ([]models.PaymentMethod, error)
 	GeneratePaymentNumber() (string, error)
 }

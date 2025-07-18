@@ -6,18 +6,21 @@ import (
 	"flutter-bengkel/internal/models"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
 	Create(user *models.User) error
-	GetByID(id int64) (*models.User, error)
+	GetByID(id uuid.UUID) (*models.User, error)
 	GetByUsername(username string) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
-	Update(id int64, user *models.User) error
-	Delete(id int64) error
-	List(offset, limit int) ([]models.User, int64, error)
-	UpdateLastLogin(id int64) error
-	ChangePassword(id int64, hashedPassword string) error
+	Update(id uuid.UUID, user *models.User) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, includeDeleted bool) ([]models.User, int64, error)
+	UpdateLastLogin(id uuid.UUID) error
+	ChangePassword(id uuid.UUID, hashedPassword string) error
 }
 
 type userRepository struct {
@@ -195,8 +198,8 @@ func (r *userRepository) ChangePassword(id int64, hashedPassword string) error {
 
 // Role Repository
 type RoleRepository interface {
-	GetByID(id int64) (*models.Role, error)
-	GetPermissionsByRoleID(roleID int64) ([]models.Permission, error)
+	GetByID(id uuid.UUID) (*models.Role, error)
+	GetPermissionsByRoleID(roleID uuid.UUID) ([]models.Permission, error)
 	List() ([]models.Role, error)
 }
 
@@ -276,7 +279,7 @@ func (r *permissionRepository) List() ([]models.Permission, error) {
 
 // Outlet Repository
 type OutletRepository interface {
-	GetByID(id int64) (*models.Outlet, error)
+	GetByID(id uuid.UUID) (*models.Outlet, error)
 	List() ([]models.Outlet, error)
 }
 

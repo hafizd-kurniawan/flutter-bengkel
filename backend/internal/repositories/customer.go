@@ -6,16 +6,19 @@ import (
 	"flutter-bengkel/internal/models"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/google/uuid"
 )
 
 // Customer Repository
 type CustomerRepository interface {
 	Create(customer *models.Customer) error
-	GetByID(id int64) (*models.Customer, error)
+	GetByID(id uuid.UUID) (*models.Customer, error)
 	GetByCustomerCode(code string) (*models.Customer, error)
-	Update(id int64, customer *models.Customer) error
-	Delete(id int64) error
-	List(offset, limit int, search string) ([]models.Customer, int64, error)
+	Update(id uuid.UUID, customer *models.Customer) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, search string, includeDeleted bool) ([]models.Customer, int64, error)
 	GenerateCustomerCode() (string, error)
 }
 
@@ -169,12 +172,14 @@ func (r *customerRepository) GenerateCustomerCode() (string, error) {
 // Vehicle Repository
 type VehicleRepository interface {
 	Create(vehicle *models.CustomerVehicle) error
-	GetByID(id int64) (*models.CustomerVehicle, error)
+	GetByID(id uuid.UUID) (*models.CustomerVehicle, error)
 	GetByVehicleNumber(vehicleNumber string) (*models.CustomerVehicle, error)
-	GetByCustomerID(customerID int64) ([]models.CustomerVehicle, error)
-	Update(id int64, vehicle *models.CustomerVehicle) error
-	Delete(id int64) error
-	List(offset, limit int, customerID *int64, search string) ([]models.CustomerVehicle, int64, error)
+	GetByCustomerID(customerID uuid.UUID) ([]models.CustomerVehicle, error)
+	Update(id uuid.UUID, vehicle *models.CustomerVehicle) error
+	SoftDelete(id uuid.UUID, deletedBy uuid.UUID) error
+	Restore(id uuid.UUID) error
+	PermanentDelete(id uuid.UUID) error
+	List(offset, limit int, customerID *uuid.UUID, search string, includeDeleted bool) ([]models.CustomerVehicle, int64, error)
 }
 
 type vehicleRepository struct {
