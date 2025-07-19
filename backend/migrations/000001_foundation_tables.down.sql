@@ -1,0 +1,6 @@
+-- Drop foundation tables
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS role_has_permissions CASCADE;
+DROP TABLE IF EXISTS permissions CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
+DROP TABLE IF EXISTS outlets CASCADE;

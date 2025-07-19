@@ -1,0 +1,10 @@
+-- Drop financial tables
+DROP TABLE IF EXISTS promotions CASCADE;
+DROP TABLE IF EXISTS reports CASCADE;
+DROP TABLE IF EXISTS cash_flows CASCADE;
+DROP TABLE IF EXISTS receivable_payments CASCADE;
+DROP TABLE IF EXISTS accounts_receivables CASCADE;
+DROP TABLE IF EXISTS payable_payments CASCADE;
+DROP TABLE IF EXISTS accounts_payables CASCADE;
+DROP TABLE IF EXISTS payments CASCADE;
+DROP TABLE IF EXISTS payment_methods CASCADE;
