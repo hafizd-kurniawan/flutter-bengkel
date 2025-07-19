@@ -10,7 +10,7 @@ class UserModel {
   final DateTime? lastLoginAt;
   final DateTime createdAt;
 
-  const UserModel({
+  UserModel({
     required this.id,
     required this.username,
     required this.email,
@@ -21,9 +21,7 @@ class UserModel {
     this.isActive = true,
     this.lastLoginAt,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? const Duration(seconds: 0).inMicroseconds > 0 
-         ? DateTime.now() 
-         : DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
