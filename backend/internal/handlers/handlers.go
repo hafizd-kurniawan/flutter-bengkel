@@ -62,6 +62,10 @@ func (h *Handlers) SetupRoutes(api fiber.Router) {
 	payments := protected.Group("/payments")
 	h.setupPaymentRoutes(payments)
 
+	// Vehicle trading routes
+	vehicleTrading := protected.Group("/vehicle-trading")
+	h.setupVehicleTradingRoutes(vehicleTrading)
+
 	// Master data routes
 	masterData := protected.Group("/master-data")
 	h.setupMasterDataRoutes(masterData)
