@@ -21,6 +21,9 @@ type ServiceJobService interface {
 	UpdateDetail(detailID int64, detail *models.ServiceDetail) error
 	DeleteDetail(detailID int64) error
 	CalculateTotal(serviceJobID int64) error
+	// New methods for POS/enhanced functionality
+	GetQueueManagement(req *models.QueueManagementRequest) (map[string]interface{}, error)
+	AutoAssignMechanic(req *models.AutoAssignMechanicRequest) (map[string]interface{}, error)
 }
 
 type serviceJobService struct {
@@ -273,6 +276,33 @@ func (s *serviceJobService) CalculateTotal(serviceJobID int64) error {
 	return s.repos.ServiceJob.Update(serviceJobID, serviceJob)
 }
 
+// GetQueueManagement returns queue management data (stub implementation)
+func (s *serviceJobService) GetQueueManagement(req *models.QueueManagementRequest) (map[string]interface{}, error) {
+	// Stub implementation - return mock queue data
+	queueData := map[string]interface{}{
+		"current_queue":    1,
+		"total_jobs":       5,
+		"pending_jobs":     3,
+		"in_progress_jobs": 2,
+		"completed_jobs":   0,
+		"queue_list":       []map[string]interface{}{},
+	}
+	return queueData, nil
+}
+
+// AutoAssignMechanic automatically assigns mechanic based on workload (stub implementation)
+func (s *serviceJobService) AutoAssignMechanic(req *models.AutoAssignMechanicRequest) (map[string]interface{}, error) {
+	// Stub implementation - return mock assignment data
+	assignment := map[string]interface{}{
+		"service_job_id":   req.ServiceJobID,
+		"assigned_to_id":   5, // Mock technician ID
+		"assigned_to_name": "Ahmad (Technician)",
+		"current_workload": 3,
+		"assignment_time":  "2024-01-01T10:00:00Z",
+	}
+	return assignment, nil
+}
+
 // Transaction Service
 type TransactionService interface {
 	Create(req *models.CreateTransactionRequest, outletID int64, userID int64) (*models.Transaction, error)
@@ -281,6 +311,10 @@ type TransactionService interface {
 	Delete(id int64) error
 	List(page, limit int, outletID *int64, transactionType string, search string) ([]models.Transaction, *models.PaginationMeta, error)
 	UpdatePaymentStatus(id int64, status string) error
+	// New methods for POS functionality
+	CreatePOSTransaction(req *models.CreatePOSTransactionRequest, userID int64, outletID int64) (*models.Transaction, error)
+	AddTransactionPayment(transactionID int64, req *models.CreateTransactionPaymentRequest) (*models.TransactionPayment, error)
+	GetTransactionWithDetails(transactionID int64) (*models.Transaction, error)
 }
 
 type transactionService struct {
@@ -443,6 +477,49 @@ func (s *transactionService) UpdatePaymentStatus(id int64, status string) error 
 	}
 
 	return s.repos.Transaction.UpdatePaymentStatus(id, status)
+}
+
+// CreatePOSTransaction creates a POS transaction with multi-payment support (stub implementation)
+func (s *transactionService) CreatePOSTransaction(req *models.CreatePOSTransactionRequest, userID int64, outletID int64) (*models.Transaction, error) {
+	// Convert POS request to standard transaction request
+	transactionReq := &models.CreateTransactionRequest{
+		TransactionType: "sparepart_sale", // Default for POS
+		CustomerID:      req.CustomerID,
+		DiscountAmount:  req.DiscountAmount,
+		TaxAmount:       req.TaxAmount,
+		Notes:           req.Notes,
+		Details:         req.Details,
+	}
+
+	// Create standard transaction
+	transaction, err := s.Create(transactionReq, outletID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Handle multi-payment from req.Payments
+	// For now, just return the created transaction
+
+	return transaction, nil
+}
+
+// AddTransactionPayment adds a payment method to existing transaction (stub implementation)
+func (s *transactionService) AddTransactionPayment(transactionID int64, req *models.CreateTransactionPaymentRequest) (*models.TransactionPayment, error) {
+	// Stub implementation - return mock payment
+	payment := &models.TransactionPayment{
+		TransactionID:   transactionID,
+		PaymentMethodID: req.PaymentMethodID,
+		Amount:          req.Amount,
+		PaymentOrder:    1, // Would be calculated based on existing payments
+	}
+	payment.ID = 1 // Mock ID
+	return payment, nil
+}
+
+// GetTransactionWithDetails gets transaction with all details and payments (stub implementation)
+func (s *transactionService) GetTransactionWithDetails(transactionID int64) (*models.Transaction, error) {
+	// Use existing GetByID method
+	return s.GetByID(transactionID)
 }
 
 // Payment Service

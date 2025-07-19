@@ -325,6 +325,8 @@ type ProductService interface {
 	ListCategories() ([]models.Category, error)
 	ListSuppliers() ([]models.Supplier, error)
 	ListUnitTypes() ([]models.UnitType, error)
+	// New methods for POS
+	SearchProducts(req *models.ProductSearchRequest) ([]models.Product, error)
 }
 
 type productService struct {
@@ -437,4 +439,12 @@ func (s *productService) ListSuppliers() ([]models.Supplier, error) {
 
 func (s *productService) ListUnitTypes() ([]models.UnitType, error) {
 	return s.repos.Product.ListUnitTypes()
+}
+
+// SearchProducts searches products by query or barcode (stub implementation)
+func (s *productService) SearchProducts(req *models.ProductSearchRequest) ([]models.Product, error) {
+	// Stub implementation - in production, this would search products by query/barcode
+	// For now, use the existing List method with search parameter
+	products, _, err := s.List(1, req.Limit, req.Category, nil, req.Query)
+	return products, err
 }

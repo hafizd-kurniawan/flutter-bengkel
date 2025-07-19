@@ -17,6 +17,72 @@ func (h *Handlers) requirePermission(permission string) fiber.Handler {
 	return middleware.RequirePermission(permission)
 }
 
+// requireRole returns middleware that checks for specific roles (by name)
+func (h *Handlers) requireRole(roles ...string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		roleID, ok := c.Locals("role_id").(int64)
+		if !ok {
+			return c.Status(fiber.StatusForbidden).JSON(models.Response{
+				Success: false,
+				Message: "No role found",
+			})
+		}
+
+		// Get role name from database based on role_id
+		// For now, use a simple mapping (in production, this should be from database)
+		roleName := h.getRoleNameByID(roleID)
+		if roleName == "" {
+			return c.Status(fiber.StatusForbidden).JSON(models.Response{
+				Success: false,
+				Message: "Invalid role",
+			})
+		}
+
+		// Store role_name in context for later use
+		c.Locals("role_name", roleName)
+
+		// Check if user has any of the required roles
+		hasRole := false
+		for _, role := range roles {
+			if roleName == role {
+				hasRole = true
+				break
+			}
+		}
+
+		if !hasRole {
+			return c.Status(fiber.StatusForbidden).JSON(models.Response{
+				Success: false,
+				Message: "Insufficient role permissions",
+			})
+		}
+
+		return c.Next()
+	}
+}
+
+// getRoleNameByID returns role name by role ID (simplified mapping)
+func (h *Handlers) getRoleNameByID(roleID int64) string {
+	// In production, this should be fetched from database
+	// For now, use simple mapping based on seed data
+	roleMap := map[int64]string{
+		1: "Admin",
+		2: "Manager", 
+		3: "Kasir",
+		4: "Sales",
+		5: "Technician",
+		6: "Customer Service",
+	}
+	return roleMap[roleID]
+}
+
+// validateStruct validates struct using validation tags (stub implementation)
+func (h *Handlers) validateStruct(s interface{}) error {
+	// In production, this should use github.com/go-playground/validator
+	// For now, return nil (no validation)
+	return nil
+}
+
 // setupAuthRoutes sets up authentication routes
 func (h *Handlers) setupAuthRoutes(auth fiber.Router) {
 	auth.Post("/login", h.login)
