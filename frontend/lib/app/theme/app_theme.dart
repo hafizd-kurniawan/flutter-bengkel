@@ -35,10 +35,10 @@ class AppTheme {
       ),
       
       // Card theme
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
         clipBehavior: Clip.antiAlias,
       ),
@@ -146,10 +146,10 @@ class AppTheme {
       ),
       
       // Card theme
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
         clipBehavior: Clip.antiAlias,
       ),
