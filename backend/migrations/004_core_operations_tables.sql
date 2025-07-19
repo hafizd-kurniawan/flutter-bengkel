@@ -1,36 +1,38 @@
--- Core Operations Tables
+-- Core Operations Tables (PostgreSQL with Soft Delete)
 
 -- Service jobs with queue management
 CREATE TABLE service_jobs (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    job_id BIGSERIAL PRIMARY KEY,
     job_number VARCHAR(50) NOT NULL UNIQUE,
     customer_id BIGINT NOT NULL,
     vehicle_id BIGINT NOT NULL,
     outlet_id BIGINT NOT NULL,
     technician_id BIGINT,
-    queue_number INT NOT NULL,
-    priority ENUM('low', 'normal', 'high', 'urgent') DEFAULT 'normal',
-    status ENUM('pending', 'in_progress', 'completed', 'cancelled', 'on_hold') DEFAULT 'pending',
+    queue_number INTEGER NOT NULL,
+    priority VARCHAR(20) CHECK (priority IN ('low', 'normal', 'high', 'urgent')) DEFAULT 'normal',
+    status VARCHAR(20) CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled', 'on_hold')) DEFAULT 'pending',
     problem_description TEXT NOT NULL,
-    estimated_completion DATETIME,
-    actual_completion DATETIME,
+    estimated_completion TIMESTAMP,
+    actual_completion TIMESTAMP,
     total_amount DECIMAL(15,2) DEFAULT 0,
     discount_amount DECIMAL(15,2) DEFAULT 0,
     tax_amount DECIMAL(15,2) DEFAULT 0,
     final_amount DECIMAL(15,2) DEFAULT 0,
-    warranty_period_days INT DEFAULT 0,
+    warranty_period_days INTEGER DEFAULT 0,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id),
-    FOREIGN KEY (vehicle_id) REFERENCES customer_vehicles(id),
-    FOREIGN KEY (outlet_id) REFERENCES outlets(id),
-    FOREIGN KEY (technician_id) REFERENCES users(id) ON DELETE SET NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (vehicle_id) REFERENCES customer_vehicles(vehicle_id),
+    FOREIGN KEY (outlet_id) REFERENCES outlets(outlet_id),
+    FOREIGN KEY (technician_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 -- Service job details (services and products used)
 CREATE TABLE service_details (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    detail_id BIGSERIAL PRIMARY KEY,
     service_job_id BIGINT NOT NULL,
     product_id BIGINT,
     service_id BIGINT,
@@ -39,30 +41,36 @@ CREATE TABLE service_details (
     total_price DECIMAL(15,2) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (service_job_id) REFERENCES service_jobs(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL,
-    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (service_job_id) REFERENCES service_jobs(job_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE SET NULL,
+    FOREIGN KEY (service_id) REFERENCES services(service_id) ON DELETE SET NULL,
     CHECK (product_id IS NOT NULL OR service_id IS NOT NULL)
 );
 
 -- Service job history for tracking progress
 CREATE TABLE service_job_histories (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    history_id BIGSERIAL PRIMARY KEY,
     service_job_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    previous_status ENUM('pending', 'in_progress', 'completed', 'cancelled', 'on_hold'),
-    new_status ENUM('pending', 'in_progress', 'completed', 'cancelled', 'on_hold') NOT NULL,
+    previous_status VARCHAR(20) CHECK (previous_status IN ('pending', 'in_progress', 'completed', 'cancelled', 'on_hold')),
+    new_status VARCHAR(20) CHECK (new_status IN ('pending', 'in_progress', 'completed', 'cancelled', 'on_hold')) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (service_job_id) REFERENCES service_jobs(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (service_job_id) REFERENCES service_jobs(job_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Transactions table for all business operations
 CREATE TABLE transactions (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    transaction_id BIGSERIAL PRIMARY KEY,
     transaction_number VARCHAR(50) NOT NULL UNIQUE,
-    transaction_type ENUM('service', 'sparepart_sale', 'vehicle_purchase', 'vehicle_sale') NOT NULL,
+    transaction_type VARCHAR(20) CHECK (transaction_type IN ('service', 'sparepart_sale', 'vehicle_purchase', 'vehicle_sale')) NOT NULL,
     customer_id BIGINT,
     outlet_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -71,20 +79,22 @@ CREATE TABLE transactions (
     discount_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
     tax_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
     total_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
-    payment_status ENUM('pending', 'partial', 'paid', 'cancelled') DEFAULT 'pending',
+    payment_status VARCHAR(20) CHECK (payment_status IN ('pending', 'partial', 'paid', 'cancelled')) DEFAULT 'pending',
     notes TEXT,
-    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
-    FOREIGN KEY (outlet_id) REFERENCES outlets(id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (service_job_id) REFERENCES service_jobs(id) ON DELETE SET NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE SET NULL,
+    FOREIGN KEY (outlet_id) REFERENCES outlets(outlet_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (service_job_id) REFERENCES service_jobs(job_id) ON DELETE SET NULL
 );
 
 -- Transaction details
 CREATE TABLE transaction_details (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    detail_id BIGSERIAL PRIMARY KEY,
     transaction_id BIGINT NOT NULL,
     product_id BIGINT,
     service_id BIGINT,
@@ -93,19 +103,22 @@ CREATE TABLE transaction_details (
     unit_price DECIMAL(15,2) NOT NULL,
     total_price DECIMAL(15,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL,
-    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE SET NULL,
+    FOREIGN KEY (service_id) REFERENCES services(service_id) ON DELETE SET NULL
 );
 
 -- Purchase orders for inventory management
 CREATE TABLE purchase_orders (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    po_id BIGSERIAL PRIMARY KEY,
     po_number VARCHAR(50) NOT NULL UNIQUE,
     supplier_id BIGINT NOT NULL,
     outlet_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    status ENUM('draft', 'sent', 'confirmed', 'received', 'cancelled') DEFAULT 'draft',
+    status VARCHAR(20) CHECK (status IN ('draft', 'sent', 'confirmed', 'received', 'cancelled')) DEFAULT 'draft',
     order_date DATE NOT NULL,
     expected_delivery_date DATE,
     actual_delivery_date DATE,
@@ -114,15 +127,17 @@ CREATE TABLE purchase_orders (
     total_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
-    FOREIGN KEY (outlet_id) REFERENCES outlets(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
+    FOREIGN KEY (outlet_id) REFERENCES outlets(outlet_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Purchase order details
 CREATE TABLE purchase_order_details (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    detail_id BIGSERIAL PRIMARY KEY,
     purchase_order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,
@@ -131,37 +146,11 @@ CREATE TABLE purchase_order_details (
     received_quantity DECIMAL(10,3) DEFAULT 0,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
-
--- Vehicle purchases (for vehicle trading business)
-CREATE TABLE vehicle_purchases (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    purchase_number VARCHAR(50) NOT NULL UNIQUE,
-    vehicle_number VARCHAR(20) NOT NULL,
-    brand VARCHAR(100) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    year YEAR NOT NULL,
-    color VARCHAR(50),
-    mileage BIGINT,
-    condition_rating ENUM('excellent', 'good', 'fair', 'poor') DEFAULT 'good',
-    purchase_price DECIMAL(15,2) NOT NULL,
-    estimated_selling_price DECIMAL(15,2),
-    actual_selling_price DECIMAL(15,2),
-    seller_name VARCHAR(255),
-    seller_phone VARCHAR(20),
-    seller_address TEXT,
-    status ENUM('purchased', 'available', 'sold', 'under_repair') DEFAULT 'purchased',
-    purchase_date DATE NOT NULL,
-    sale_date DATE,
-    outlet_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (outlet_id) REFERENCES outlets(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    created_by INTEGER,
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(po_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 -- Create indexes for better performance
@@ -179,6 +168,3 @@ CREATE INDEX idx_transactions_date ON transactions(transaction_date);
 CREATE INDEX idx_purchase_orders_po_number ON purchase_orders(po_number);
 CREATE INDEX idx_purchase_orders_supplier_id ON purchase_orders(supplier_id);
 CREATE INDEX idx_purchase_orders_status ON purchase_orders(status);
-CREATE INDEX idx_vehicle_purchases_purchase_number ON vehicle_purchases(purchase_number);
-CREATE INDEX idx_vehicle_purchases_vehicle_number ON vehicle_purchases(vehicle_number);
-CREATE INDEX idx_vehicle_purchases_status ON vehicle_purchases(status);
