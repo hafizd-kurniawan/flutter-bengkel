@@ -1,0 +1,8 @@
+-- Drop master data tables
+DROP TABLE IF EXISTS services CASCADE;
+DROP TABLE IF EXISTS service_categories CASCADE;
+DROP TABLE IF EXISTS product_serial_numbers CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS suppliers CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS unit_types CASCADE;
