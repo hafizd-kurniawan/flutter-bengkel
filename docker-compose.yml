@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: bengkel-postgres
+    environment:
+      POSTGRES_DB: bengkel_db
+      POSTGRES_USER: bengkel_user
+      POSTGRES_PASSWORD: bengkel_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations/postgresql:/docker-entrypoint-initdb.d
+    networks:
+      - bengkel-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bengkel-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: bengkel_user
+      DB_PASSWORD: bengkel_password
+      DB_NAME: bengkel_db
+      JWT_SECRET: your-super-secret-jwt-key-for-production
+      APP_ENV: production
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - bengkel-network
+    restart: unless-stopped
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bengkel-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bengkel.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - bengkel-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  bengkel-network:
+    driver: bridge

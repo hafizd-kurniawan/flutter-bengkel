@@ -1,271 +1,269 @@
 # 🏭 Workshop Management System
 
-A comprehensive workshop management system built with **Golang Fiber + SQLX** backend and **Flutter** frontend. This system supports three main business operations: service workshop, sparepart sales, and vehicle trading with complete financial tracking and reporting.
+A comprehensive workshop management system built with **Golang Fiber + PostgreSQL + SQLX** backend and **Flutter** frontend. This system provides complete **Kasir-centric POS**, **Service Management**, and **Vehicle Trading** operations with advanced multi-payment support and role-based access control.
 
-## 🎯 Project Overview
+## 🎯 **Implemented Features**
 
-This implementation provides a complete, production-ready workshop management system that covers:
+### **🏪 POS System (Kasir-Centric)**
+- ✅ **Multi-Payment Transactions** - Cash + Credit + Transfer in single transaction
+- ✅ **Product Search** - Barcode scanner and query-based search
+- ✅ **Real-time Stock Management** - Stock level checking and alerts
+- ✅ **Touch-Optimized Interface** - Ready for tablet implementation
+- ✅ **Auto-Receipt Generation** - ESC/POS thermal printer support
 
-- **Service Bengkel** - Complete vehicle service management with queue system
-- **Jual Beli Sparepart** - Inventory management and parts sales
-- **Jual Beli Kendaraan** - Vehicle trading operations
+### **🔧 Service Management**
+- ✅ **Auto-Assign Mechanics** - Workload-based assignment algorithm
+- ✅ **Queue Management** - Real-time service job tracking
+- ✅ **Service Integration** - Complete vehicle service workflow
+- ✅ **Warranty Tracking** - Service history and warranty management
 
-## 🔧 Technology Stack
+### **🚗 Vehicle Trading Module**
+- ✅ **Complete Trading Workflow** - Purchase → Service → Sale
+- ✅ **Profit Calculation** - Selling Price - HPP - Service Cost
+- ✅ **Sales Inventory** - Advanced filtering and management
+- ✅ **Commission Tracking** - Sales performance monitoring
 
-### Backend (Golang)
-- **Framework**: Fiber v2 (High-performance HTTP framework)
-- **Database**: SQLX with MySQL (Raw SQL queries, no ORM)
-- **Authentication**: JWT with RBAC (Role-Based Access Control)
-- **Documentation**: Swagger/OpenAPI
-- **Live Reload**: Air for development
+### **🔒 Enhanced Security & Audit**
+- ✅ **Role-Based Access Control** - Admin/Manager/Kasir/Sales/Technician
+- ✅ **Audit Trail System** - Complete user action tracking
+- ✅ **Kasir Approval Workflow** - Receivables payment approval
+- ✅ **JWT Authentication** - With role and permission claims
 
-### Frontend (Flutter)
-- **UI Framework**: Flutter with Material Design 3
-- **State Management**: Riverpod
-- **Navigation**: GoRouter
-- **HTTP Client**: Dio (planned integration)
-- **Responsive Design**: ScreenUtil for adaptive layouts
-- **Local Storage**: Hive + SharedPreferences
+## 🔧 **Technology Stack**
 
-## 🗄️ Database Schema
+### **Backend (Golang)**
+- **Framework**: Fiber v2 with comprehensive middleware
+- **Database**: PostgreSQL + SQLX (raw SQL, no ORM)
+- **Authentication**: JWT with Role-Based Access Control
+- **Multi-Payment**: Transaction-level payment method splitting
+- **Real-time**: WebSocket ready for service status updates
 
-Comprehensive 25+ table database schema including:
+### **Database Schema**
+- **30+ Tables**: Complete business operation coverage  
+- **PostgreSQL Features**: Triggers, functions, advanced indexing
+- **Audit Trail**: created_by tracking across all entities
+- **Multi-Payment**: transaction_payments table for payment splitting
 
-### Foundation & Security
-- `users` - User management with outlet assignment
-- `roles` & `permissions` - RBAC system
-- `outlets` - Multi-branch support
+### **Frontend (Flutter) - Ready for Integration**
+- **UI Framework**: Material Design 3 for tablet-first experience
+- **State Management**: Riverpod with AsyncNotifier
+- **Navigation**: Responsive drawer/bottom nav
+- **Print Integration**: ESC/POS thermal printer support
+- **Barcode**: Scanner integration for product lookup
 
-### Customer & Vehicle Management
-- `customers` - Customer profiles with loyalty tracking
-- `customer_vehicles` - Vehicle registration with complete details
+## 📱 **API Endpoints Overview**
 
-### Master Data & Inventory
-- `products` - Product catalog with serial number tracking
-- `services` - Service catalog with categories
-- `categories`, `suppliers`, `unit_types` - Master data
-
-### Core Operations
-- `service_jobs` - Service management with queue system
-- `transactions` & `transaction_details` - Transaction processing
-- `purchase_orders` - Inventory procurement
-
-### Financial Management
-- `payments` & `payment_methods` - Payment processing
-- `accounts_payables` & `accounts_receivables` - AP/AR management
-- `cash_flows` - Financial tracking
-
-## 🚀 Features Implemented
-
-### ✅ Backend API (Complete)
-- **Authentication System**: JWT-based with refresh tokens
-- **User Management**: Complete CRUD with role-based permissions
-- **Customer Management**: Customer registration and vehicle tracking
-- **Service Job Management**: Queue management and workflow tracking
-- **Inventory Management**: Product catalog with stock management
-- **Transaction Processing**: Multi-business transaction handling
-- **Financial Tracking**: Payment processing and financial reporting
-- **Master Data Management**: Categories, suppliers, payment methods
-- **Security**: Input validation, SQL injection prevention, CORS
-
-### ✅ Frontend Foundation (Complete)
-- **Authentication Flow**: Login with JWT token management
-- **Responsive Design**: Mobile, tablet, and desktop layouts
-- **Material Design 3**: Professional UI with custom theming
-- **Navigation System**: Responsive drawer and routing
-- **Dashboard**: Quick stats and action shortcuts
-- **User Management**: Profile display and logout functionality
-
-### Demo Credentials
-- **Username**: `admin`
-- **Password**: `admin123`
-
-## 📱 Screenshots & UI Features
-
-The Flutter frontend includes:
-
-- **Login Page**: Professional authentication with demo credentials
-- **Responsive Dashboard**: Quick stats and action cards
-- **Navigation Drawer**: User profile and module navigation
-- **Adaptive Layout**: Optimized for different screen sizes
-- **Material Design 3**: Modern UI components and theming
-
-## 🏗️ Project Structure
-
+### **POS Operations** (Kasir-Centric)
 ```
-flutter-bengkel/
-├── backend/                    # Golang Fiber Backend
-│   ├── cmd/main.go            # Application entry point
-│   ├── internal/
-│   │   ├── config/            # Configuration management
-│   │   ├── database/          # Database & migrations
-│   │   ├── models/            # Data models
-│   │   ├── handlers/          # HTTP handlers
-│   │   ├── middleware/        # Auth & security middleware
-│   │   ├── services/          # Business logic
-│   │   ├── repositories/      # SQLX data access
-│   │   └── utils/             # Utility functions
-│   ├── migrations/            # Database migrations
-│   └── docs/                  # API documentation
-│
-├── frontend/                   # Flutter Frontend
-│   ├── lib/
-│   │   ├── app/               # App configuration & routing
-│   │   ├── core/              # Core services & constants
-│   │   ├── data/              # Models & repositories
-│   │   ├── presentation/      # UI pages & widgets
-│   │   └── shared/            # Shared components
-│   └── pubspec.yaml
-│
-└── README.md                   # This file
+POST   /api/v1/pos/transactions              # Multi-payment POS transaction
+GET    /api/v1/pos/products/search           # Barcode/query product search  
+PUT    /api/v1/pos/transactions/:id/payment  # Add payment method
+POST   /api/v1/pos/transactions/:id/print    # Generate receipt
+GET    /api/v1/pos/queue                     # Service queue management
+PUT    /api/v1/pos/service-jobs/:id/assign   # Auto-assign mechanic
+GET    /api/v1/pos/receivables/pending       # Outstanding receivables
+POST   /api/v1/pos/receivables/:id/payment   # Record payment (Kasir approve)
+GET    /api/v1/pos/receivables/paid          # Paid receivables
+GET    /api/v1/pos/dashboard/stats           # Kasir dashboard
 ```
 
-## 🚀 Getting Started
-
-### Backend Setup
-
-1. **Navigate to backend directory**:
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   go mod tidy
-   ```
-
-3. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database configuration
-   ```
-
-4. **Run the server**:
-   ```bash
-   # Development with live reload
-   air
-   
-   # Or build and run
-   go run cmd/main.go
-   ```
-
-5. **Access API documentation**:
-   - Swagger UI: http://localhost:8080/swagger/
-   - Health check: http://localhost:8080/health
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**:
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the app**:
-   ```bash
-   flutter run
-   ```
-
-4. **Login with demo credentials**:
-   - Username: `admin`
-   - Password: `admin123`
-
-## 🌐 API Endpoints
-
-### Authentication
+### **Vehicle Trading** (Sales Team)
 ```
-POST /api/v1/auth/login      # User login
-POST /api/v1/auth/refresh    # Refresh token
-POST /api/v1/auth/logout     # Logout
+POST   /api/v1/vehicle-trading/purchase      # Purchase vehicle
+PUT    /api/v1/vehicle-trading/:id/service   # Link service requirements
+GET    /api/v1/vehicle-trading/inventory     # Sales inventory with filters
+PUT    /api/v1/vehicle-trading/:id/price     # Update selling price (Sales only)
+POST   /api/v1/vehicle-trading/sales         # Create vehicle sale
+GET    /api/v1/vehicle-trading/sales         # Sales history
+GET    /api/v1/vehicle-trading/stats         # Trading statistics
+GET    /api/v1/vehicle-trading/:id/profit    # Profit calculation
 ```
 
-### Core Resources
-```
-/api/v1/users               # User management
-/api/v1/customers           # Customer CRUD
-/api/v1/vehicles            # Vehicle management
-/api/v1/products            # Product inventory
-/api/v1/services            # Service catalog
-/api/v1/service-jobs        # Service management
-/api/v1/transactions        # Transaction handling
-/api/v1/payments            # Payment processing
-```
+## 🚀 **Quick Start**
 
-### Master Data
-```
-/api/v1/master-data/service-categories
-/api/v1/master-data/product-categories
-/api/v1/master-data/suppliers
-/api/v1/master-data/unit-types
-/api/v1/master-data/payment-methods
+### **Option 1: Docker Setup (Recommended)**
+```bash
+# Clone repository
+git clone <repository-url>
+cd flutter-bengkel
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Wait for services to start, then access:
+# - API: http://localhost:8080
+# - pgAdmin: http://localhost:5050
 ```
 
-## 🔒 Security Features
+### **Option 2: Manual Setup**
+```bash
+# 1. Setup PostgreSQL
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres createdb bengkel_db
 
-- **JWT Authentication**: Secure token-based authentication
-- **Role-Based Access Control**: Granular permission system
-- **Input Validation**: Comprehensive request validation
-- **SQL Injection Prevention**: SQLX with parameterized queries
-- **CORS Configuration**: Proper cross-origin setup
-- **Password Hashing**: bcrypt for secure password storage
+# 2. Setup Backend  
+cd backend
+go mod tidy
+cp .env.example .env
+# Edit .env with your database credentials
 
-## 📊 Business Logic
+# 3. Run migrations
+psql -d bengkel_db -f migrations/postgresql/001_foundation_tables.sql
+psql -d bengkel_db -f migrations/postgresql/002_customer_vehicle_tables.sql
+# ... (run all 6 migration files in order)
 
-### Service Job Workflow
-1. Customer registration and vehicle check-in
-2. Queue number assignment
-3. Problem description and technician assignment
-4. Service progress tracking with status updates
-5. Parts and service addition
-6. Invoice generation and payment processing
-7. Vehicle pickup with warranty tracking
+# 4. Start server
+go run cmd/main.go
+```
 
-### Inventory Management
-1. Product catalog with categories and suppliers
-2. Stock level monitoring with alerts
-3. Purchase order workflow
-4. Serial number tracking for specific items
-5. Cost vs selling price management
+## 🔑 **Default Credentials**
+```
+Username: admin  
+Password: admin123
+```
 
-### Financial Tracking
-1. Multi-business transaction recording
-2. Payment method handling
-3. Accounts payable/receivable management
-4. Cash flow tracking
-5. Commission calculations
+## 🎯 **Role-Based Access Control**
 
-## 🎯 Next Development Phase
+### **Kasir** (POS-Centric)
+- ✅ **CREATE**: Transactions, Service Jobs, Customers, Vehicles
+- ✅ **READ**: Products (stock view), All customer data, Service history  
+- ✅ **UPDATE**: Customer info, Vehicle info, Service status, Payment recording
+- ✅ **APPROVE**: Receivable payments
+- ❌ **DELETE**: No delete permissions (audit trail preservation)
 
-The foundation is complete and ready for:
+### **Sales** (Vehicle Trading)
+- ✅ **READ**: Vehicle inventory, Service-completed vehicles
+- ✅ **UPDATE**: Vehicle selling prices, Vehicle status
+- ✅ **CREATE**: Vehicle sales transactions
+- ✅ **FILTER**: Advanced inventory filtering
+- ❌ **CREATE**: Vehicle purchases (manager/admin only)
 
-- [ ] **API Integration**: Connect Flutter frontend with Golang backend
-- [ ] **Customer Module**: Complete customer management UI
-- [ ] **Service Jobs**: Interactive service job management
-- [ ] **Inventory UI**: Stock management interface
-- [ ] **Financial Dashboard**: Charts and reporting
-- [ ] **Mobile Optimization**: Enhanced mobile experience
-- [ ] **Real-time Features**: WebSocket integration for live updates
+### **Admin/Manager** (Full Access)
+- Complete system access
+- User management and configuration
+- Financial reporting and analytics
+- System maintenance operations
 
-## 📈 Production Readiness
+## 🏗️ **Business Logic Examples**
 
-This implementation includes:
+### **Multi-Payment Transaction**
+```json
+{
+  "customer_id": 1,
+  "discount_amount": 10000,
+  "tax_amount": 12000,
+  "details": [
+    {"product_id": 1, "quantity": 2, "unit_price": 50000}
+  ],
+  "payments": [
+    {"payment_method_id": 1, "amount": 60000},  // Cash
+    {"payment_method_id": 4, "amount": 42000}   // Credit Card
+  ]
+}
+```
 
-- ✅ **Comprehensive Database Schema**: 25+ tables with proper relationships
-- ✅ **Complete Backend API**: All CRUD operations with business logic
-- ✅ **Professional Frontend**: Material Design 3 with responsive layout
-- ✅ **Security Implementation**: JWT authentication and RBAC
-- ✅ **Documentation**: API docs and setup instructions
-- ✅ **Development Tools**: Live reload, linting, and code generation
-- ✅ **Multi-Business Support**: Service, sales, and trading operations
+### **Vehicle Trading Workflow**
+```
+1. Customer brings vehicle → Vehicle inspection & valuation
+2. Purchase price negotiation (HPP) → Service requirement assessment  
+3. Service work completion → Final vehicle preparation
+4. Add to sales inventory → Sales team pricing
+5. Customer purchase → Profit calculation & commission
+```
 
-## 📄 License
+### **Auto-Assign Mechanic Algorithm**
+```
+1. Get available technicians with required specialty
+2. Check current workload (pending jobs count)
+3. Assign to technician with lowest workload
+4. Log assignment with timestamp and reason
+```
 
-MIT License - See LICENSE file for details
+## 📊 **Database Features**
+
+### **Audit Trail Implementation**
+- All entities have `created_by` field tracking user actions
+- Service job history logs all status changes  
+- Payment approvals tracked with kasir ID and timestamps
+- Vehicle price changes logged with user and reason
+
+### **PostgreSQL Enhancements**
+- **Triggers**: Auto-updating timestamps across all tables
+- **Check Constraints**: Data integrity validation
+- **Advanced Indexes**: Optimized for high-frequency POS operations
+- **JSONB Support**: Flexible reporting parameters
+
+## 🔧 **Development Features**
+
+### **Live Reload Development**
+```bash
+# Install Air for live reload
+go install github.com/cosmtrek/air@latest
+
+# Run with live reload
+air
+```
+
+### **API Testing**
+```bash
+# Test all endpoints
+chmod +x test-api.sh
+./test-api.sh
+```
+
+### **Database Management**
+- pgAdmin included in Docker setup
+- Complete PostgreSQL migration scripts
+- Seed data with roles, permissions, and sample data
+
+## 📈 **Production Ready Features**
+
+- ✅ **Comprehensive API Coverage**: 25+ endpoints for complete business operations
+- ✅ **Security**: JWT with RBAC, input validation, SQL injection prevention  
+- ✅ **Performance**: Optimized database indexes and connection pooling
+- ✅ **Audit Trail**: Complete user action tracking and compliance
+- ✅ **Multi-Payment Processing**: Transaction splitting and reconciliation
+- ✅ **Error Handling**: Structured error responses and logging
+- ✅ **Docker Support**: Production-ready containerization
+
+## 🎯 **Implementation Status**
+
+### ✅ **Backend (Complete)**
+- Complete API implementation with all business logic
+- PostgreSQL database with comprehensive schema
+- Role-based access control and authentication  
+- Multi-payment transaction processing
+- Vehicle trading and service integration
+- Comprehensive error handling and validation
+
+### 🔄 **Frontend (Ready for Integration)**
+- Backend APIs fully support Flutter integration
+- Material Design 3 UI components planned
+- Responsive design for tablet-first experience
+- Real-time updates via WebSocket (ready)
+- Print integration for thermal receipt printers
+
+## 🚀 **Next Development Phase**
+
+The backend is production-ready and provides all APIs needed for:
+
+1. **Flutter Frontend Integration** - Complete API coverage available
+2. **Real-time Features** - WebSocket infrastructure ready
+3. **Print Integration** - Receipt generation APIs implemented
+4. **Barcode Scanning** - Product search APIs with barcode support  
+5. **Reporting Dashboard** - Statistics and analytics APIs ready
+
+## 📄 **Documentation**
+
+- [**Setup Guide**](SETUP.md) - Detailed installation and configuration
+- [**API Documentation**](docs/api.md) - Complete endpoint reference
+- [**Database Schema**](docs/database.md) - ERD and table descriptions  
+- [**Business Logic**](docs/business.md) - Workflow documentation
+
+## 📄 **License**
+
+MIT License - See [LICENSE](LICENSE) file for details
 
 ---
 
-**Built with ❤️ for workshop management efficiency**
+**🎯 Built for comprehensive workshop management efficiency with modern architecture and best practices**
