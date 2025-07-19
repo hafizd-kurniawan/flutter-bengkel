@@ -1,0 +1,1568 @@
+basePath: /api/v1
+definitions:
+  models.Category:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      parent:
+        allOf:
+        - $ref: '#/definitions/models.Category'
+        description: Relations
+      parent_id:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  models.ChangePasswordRequest:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 6
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  models.CreateServiceJobRequest:
+    properties:
+      customer_id:
+        type: integer
+      notes:
+        type: string
+      priority:
+        type: string
+      problem_description:
+        type: string
+      technician_id:
+        type: integer
+      vehicle_id:
+        type: integer
+      warranty_period_days:
+        type: integer
+    required:
+    - customer_id
+    - problem_description
+    - vehicle_id
+    type: object
+  models.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      outlet_id:
+        type: integer
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      role_id:
+        type: integer
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    - role_id
+    - username
+    type: object
+  models.Customer:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      created_at:
+        type: string
+      customer_code:
+        type: string
+      customer_type:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      loyalty_points:
+        type: integer
+      name:
+        type: string
+      notes:
+        type: string
+      phone:
+        type: string
+      postal_code:
+        type: string
+      province:
+        type: string
+      updated_at:
+        type: string
+      vehicles:
+        description: Relations
+        items:
+          $ref: '#/definitions/models.CustomerVehicle'
+        type: array
+    required:
+    - name
+    - phone
+    type: object
+  models.CustomerVehicle:
+    properties:
+      brand:
+        type: string
+      chassis_number:
+        type: string
+      color:
+        type: string
+      created_at:
+        type: string
+      customer:
+        allOf:
+        - $ref: '#/definitions/models.Customer'
+        description: Relations
+      customer_id:
+        type: integer
+      engine_number:
+        type: string
+      fuel_type:
+        type: string
+      id:
+        type: integer
+      insurance_expiry:
+        type: string
+      is_active:
+        type: boolean
+      last_service_date:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      next_service_date:
+        type: string
+      notes:
+        type: string
+      registration_expiry:
+        type: string
+      transmission:
+        type: string
+      updated_at:
+        type: string
+      vehicle_number:
+        type: string
+      year:
+        type: integer
+    required:
+    - brand
+    - customer_id
+    - model
+    - vehicle_number
+    - year
+    type: object
+  models.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  models.Outlet:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  models.PaginatedResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/models.PaginationMeta'
+      success:
+        type: boolean
+    type: object
+  models.PaginationMeta:
+    properties:
+      current_page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  models.Permission:
+    properties:
+      action:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      resource:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - action
+    - name
+    - resource
+    type: object
+  models.Product:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/models.Category'
+        description: Relations
+      category_id:
+        type: integer
+      cost_price:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      has_serial_number:
+        type: boolean
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      is_service:
+        type: boolean
+      max_stock_level:
+        type: integer
+      min_stock_level:
+        type: integer
+      name:
+        type: string
+      product_code:
+        type: string
+      selling_price:
+        type: number
+      serial_numbers:
+        items:
+          $ref: '#/definitions/models.ProductSerialNumber'
+        type: array
+      stock_quantity:
+        type: integer
+      supplier:
+        $ref: '#/definitions/models.Supplier'
+      supplier_id:
+        type: integer
+      unit_type:
+        $ref: '#/definitions/models.UnitType'
+      unit_type_id:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - category_id
+    - name
+    - product_code
+    - unit_type_id
+    type: object
+  models.ProductSerialNumber:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      notes:
+        type: string
+      product:
+        allOf:
+        - $ref: '#/definitions/models.Product'
+        description: Relations
+      product_id:
+        type: integer
+      purchase_date:
+        type: string
+      sale_date:
+        type: string
+      serial_number:
+        type: string
+      status:
+        description: available, sold, reserved, damaged
+        type: string
+      updated_at:
+        type: string
+    required:
+    - product_id
+    - serial_number
+    type: object
+  models.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  models.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.Role:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      permissions:
+        description: Relations
+        items:
+          $ref: '#/definitions/models.Permission'
+        type: array
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  models.Service:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/models.ServiceCategory'
+        description: Relations
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      estimated_duration:
+        description: in minutes
+        type: integer
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      service_code:
+        type: string
+      standard_price:
+        type: number
+      updated_at:
+        type: string
+    required:
+    - category_id
+    - name
+    - service_code
+    type: object
+  models.ServiceCategory:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  models.ServiceDetail:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      notes:
+        type: string
+      product:
+        $ref: '#/definitions/models.Product'
+      product_id:
+        type: integer
+      quantity:
+        type: number
+      service:
+        $ref: '#/definitions/models.Service'
+      service_id:
+        type: integer
+      service_job:
+        allOf:
+        - $ref: '#/definitions/models.ServiceJob'
+        description: Relations
+      service_job_id:
+        type: integer
+      total_price:
+        type: number
+      unit_price:
+        type: number
+      updated_at:
+        type: string
+    required:
+    - quantity
+    - service_job_id
+    - total_price
+    - unit_price
+    type: object
+  models.ServiceJob:
+    properties:
+      actual_completion:
+        type: string
+      created_at:
+        type: string
+      customer:
+        allOf:
+        - $ref: '#/definitions/models.Customer'
+        description: Relations
+      customer_id:
+        type: integer
+      details:
+        items:
+          $ref: '#/definitions/models.ServiceDetail'
+        type: array
+      discount_amount:
+        type: number
+      estimated_completion:
+        type: string
+      final_amount:
+        type: number
+      histories:
+        items:
+          $ref: '#/definitions/models.ServiceJobHistory'
+        type: array
+      id:
+        type: integer
+      job_number:
+        type: string
+      notes:
+        type: string
+      outlet:
+        $ref: '#/definitions/models.Outlet'
+      outlet_id:
+        type: integer
+      priority:
+        description: low, normal, high, urgent
+        type: string
+      problem_description:
+        type: string
+      queue_number:
+        type: integer
+      status:
+        description: pending, in_progress, completed, cancelled, on_hold
+        type: string
+      tax_amount:
+        type: number
+      technician:
+        $ref: '#/definitions/models.User'
+      technician_id:
+        type: integer
+      total_amount:
+        type: number
+      updated_at:
+        type: string
+      vehicle:
+        $ref: '#/definitions/models.CustomerVehicle'
+      vehicle_id:
+        type: integer
+      warranty_period_days:
+        type: integer
+    required:
+    - customer_id
+    - job_number
+    - outlet_id
+    - problem_description
+    - vehicle_id
+    type: object
+  models.ServiceJobHistory:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      new_status:
+        type: string
+      notes:
+        type: string
+      previous_status:
+        type: string
+      service_job:
+        allOf:
+        - $ref: '#/definitions/models.ServiceJob'
+        description: Relations
+      service_job_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    required:
+    - new_status
+    - service_job_id
+    - user_id
+    type: object
+  models.Supplier:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      contact_person:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      payment_terms:
+        type: string
+      phone:
+        type: string
+      postal_code:
+        type: string
+      province:
+        type: string
+      supplier_code:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - name
+    - supplier_code
+    type: object
+  models.UnitType:
+    properties:
+      abbreviation:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - abbreviation
+    - name
+    type: object
+  models.UpdateServiceJobRequest:
+    properties:
+      actual_completion:
+        type: string
+      estimated_completion:
+        type: string
+      notes:
+        type: string
+      priority:
+        type: string
+      status:
+        type: string
+      technician_id:
+        type: integer
+      warranty_period_days:
+        type: integer
+    type: object
+  models.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      is_active:
+        type: boolean
+      outlet_id:
+        type: integer
+      phone:
+        type: string
+      role_id:
+        type: integer
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - email
+    - full_name
+    - role_id
+    - username
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      last_login_at:
+        type: string
+      outlet:
+        $ref: '#/definitions/models.Outlet'
+      outlet_id:
+        type: integer
+      phone:
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.Role'
+        description: Relations
+      role_id:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - email
+    - full_name
+    - role_id
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@bengkel.com
+    name: API Support
+  description: Complete workshop management system with service, sparepart, and vehicle
+    trading
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Workshop Management System API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with username and password
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.LoginResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: User login
+      tags:
+      - Authentication
+  /auth/logout:
+    post:
+      description: Logout user (client should discard tokens)
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: User logout
+      tags:
+      - Authentication
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh access token using refresh token
+      parameters:
+      - description: Refresh token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.LoginResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Refresh access token
+      tags:
+      - Authentication
+  /customers:
+    get:
+      description: Get paginated list of customers
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Customer'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get customers
+      tags:
+      - Customers
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer
+      parameters:
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Customer'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create customer
+      tags:
+      - Customers
+  /customers/{id}:
+    delete:
+      description: Delete customer by ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Delete customer
+      tags:
+      - Customers
+    get:
+      description: Get customer details by ID including vehicles
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Customer'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get customer by ID
+      tags:
+      - Customers
+    put:
+      consumes:
+      - application/json
+      description: Update customer details
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Customer'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update customer
+      tags:
+      - Customers
+  /service-jobs:
+    get:
+      description: Get paginated list of service jobs
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by outlet ID
+        in: query
+        name: outlet_id
+        type: integer
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ServiceJob'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get service jobs
+      tags:
+      - Service Jobs
+    post:
+      consumes:
+      - application/json
+      description: Create a new service job
+      parameters:
+      - description: Service job data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateServiceJobRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ServiceJob'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create service job
+      tags:
+      - Service Jobs
+  /service-jobs/{id}:
+    delete:
+      description: Delete service job by ID (sets status to cancelled)
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Delete service job
+      tags:
+      - Service Jobs
+    get:
+      description: Get service job details by ID including details
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ServiceJob'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get service job by ID
+      tags:
+      - Service Jobs
+    put:
+      consumes:
+      - application/json
+      description: Update service job details
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Service job data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateServiceJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ServiceJob'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update service job
+      tags:
+      - Service Jobs
+  /service-jobs/{id}/details:
+    get:
+      description: Get all details for a service job
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ServiceDetail'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get service job details
+      tags:
+      - Service Jobs
+    post:
+      consumes:
+      - application/json
+      description: Add a new detail to a service job
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Service detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServiceDetail'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ServiceDetail'
+              type: object
+      security:
+      - Bearer: []
+      summary: Add service job detail
+      tags:
+      - Service Jobs
+  /service-jobs/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update service job status with history tracking
+      parameters:
+      - description: Service Job ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Status update data
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            notes:
+              type: string
+            status:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Update service job status
+      tags:
+      - Service Jobs
+  /service-jobs/details/{detail_id}:
+    delete:
+      description: Delete a service job detail
+      parameters:
+      - description: Detail ID
+        in: path
+        name: detail_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Delete service job detail
+      tags:
+      - Service Jobs
+    put:
+      consumes:
+      - application/json
+      description: Update a service job detail
+      parameters:
+      - description: Detail ID
+        in: path
+        name: detail_id
+        required: true
+        type: integer
+      - description: Service detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServiceDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Update service job detail
+      tags:
+      - Service Jobs
+  /users:
+    get:
+      description: Get paginated list of users
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Get users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: Create user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Create user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      description: Delete user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      description: Get user details by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Get user by ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user details
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Update user
+      tags:
+      - Users
+  /users/{id}/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change user password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Change password request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Change password
+      tags:
+      - Users
+  /vehicles:
+    get:
+      description: Get paginated list of vehicles
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by customer ID
+        in: query
+        name: customer_id
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.CustomerVehicle'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get vehicles
+      tags:
+      - Vehicles
+    post:
+      consumes:
+      - application/json
+      description: Create a new vehicle
+      parameters:
+      - description: Vehicle data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerVehicle'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.CustomerVehicle'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create vehicle
+      tags:
+      - Vehicles
+  /vehicles/{id}:
+    delete:
+      description: Delete vehicle by ID
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Delete vehicle
+      tags:
+      - Vehicles
+    get:
+      description: Get vehicle details by ID
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.CustomerVehicle'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get vehicle by ID
+      tags:
+      - Vehicles
+    put:
+      consumes:
+      - application/json
+      description: Update vehicle details
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Vehicle data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerVehicle'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.CustomerVehicle'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update vehicle
+      tags:
+      - Vehicles
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

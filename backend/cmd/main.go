@@ -1,5 +1,7 @@
 package main
 
+//go:generate swag init
+
 import (
 	"log"
 	"os"
@@ -12,6 +14,8 @@ import (
 	"flutter-bengkel/internal/middleware"
 	"flutter-bengkel/internal/repositories"
 	"flutter-bengkel/internal/services"
+
+	_ "flutter-bengkel/docs"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
