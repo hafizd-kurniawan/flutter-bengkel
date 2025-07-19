@@ -7,7 +7,7 @@ import (
 	"flutter-bengkel/internal/config"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 type Database struct {
@@ -15,15 +15,15 @@ type Database struct {
 }
 
 func New(cfg *config.DatabaseConfig) (*Database, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.User,
-		cfg.Password,
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.Host,
 		cfg.Port,
+		cfg.User,
+		cfg.Password,
 		cfg.Name,
 	)
 
-	db, err := sqlx.Connect("mysql", dsn)
+	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -33,7 +33,7 @@ func New(cfg *config.DatabaseConfig) (*Database, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	log.Println("Database connected successfully")
+	log.Println("PostgreSQL Database connected successfully")
 
 	return &Database{DB: db}, nil
 }
